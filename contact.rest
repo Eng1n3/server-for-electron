@@ -1,0 +1,9 @@
+###
+GET http://localhost:3000/synchronize/fetch
+
+
+###
+POST http://localhost:3000/synchronize/uploads
+Content-Type: application/json
+
+[]
