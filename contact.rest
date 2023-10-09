@@ -1,9 +1,9 @@
 ###
-GET http://localhost:3000/synchronize/fetch?lastDate=169
+GET http://localhost:8001/synchronize/fetch?lastDate=1696866021000
 
 
 ###
-POST http://localhost:3000/synchronize/uploads
+POST http://localhost:8001/synchronize/uploads
 Content-Type: application/json
 
 []

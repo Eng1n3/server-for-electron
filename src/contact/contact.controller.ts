@@ -19,7 +19,7 @@ export class ContactController {
   @Get('fetch')
   @HttpCode(HttpStatus.OK)
   async fetch(@Query('lastDate', ParseDatePipe) lastDate: Date) {
-    const result = await this.contactService.fetchAll();
+    const result = await this.contactService.fetchAll(lastDate);
     return {
       statusCode: HttpStatus.OK,
       message: 'success fetch all data',

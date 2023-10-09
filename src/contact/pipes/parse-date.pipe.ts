@@ -12,6 +12,6 @@ export class ParseDatePipe implements PipeTransform<string, Date> {
     if (!val) {
       throw new BadRequestException('last date synchronize is required');
     }
-    return new Date(value);
+    return new Date(parseInt(value));
   }
 }

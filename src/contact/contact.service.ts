@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Contact } from './entities/contact.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, MoreThan, Repository } from 'typeorm';
 import { ContactDto } from './dto/uploads-contact.dto';
 import { ContactImage } from './entities/contact-image.entity';
 
 @Injectable()
 export class ContactService {
   constructor(
+    @InjectEntityManager()
+    private readonly manager: EntityManager,
     @InjectRepository(ContactImage)
     private contactImageRepo: Repository<ContactImage>,
     @InjectRepository(Contact)
@@ -23,10 +25,39 @@ export class ContactService {
     await this.contactRepo.save(newContacts);
   }
 
-  async fetchAll() {
+  async fetchAll(lastDate: Date) {
     const contacts = await this.contactRepo.find({
+      withDeleted: true,
+      where: [
+        {
+          createdAt: MoreThan(lastDate),
+        },
+        { updatedAt: MoreThan(lastDate) },
+        {
+          deletedAt: MoreThan(lastDate),
+        },
+      ],
       relations: { image: true },
     });
-    return contacts;
+    const lastCreatedDatabaseQuery = await this.contactRepo
+      .createQueryBuilder('contacts')
+      .select('MAX(createdAt)', 'dateColumn');
+    const lastUpdatedDatabaseQuery = this.contactRepo
+      .createQueryBuilder('contacts')
+      .select('MAX(createdAt)', 'dateColumn');
+    const lastDeletedDatabaseQuery = this.contactRepo
+      .createQueryBuilder('contacts')
+      .select('MAX(createdAt)', 'dateColumn');
+    const [data] = await this.manager.query(
+      `SELECT MAX(dateColumn) as lastDate FROM (
+          ${lastCreatedDatabaseQuery.getQuery()}
+          UNION
+          ${lastUpdatedDatabaseQuery.getQuery()}
+          UNION
+          ${lastDeletedDatabaseQuery.getQuery()}
+        )`,
+    );
+    const lastDateDatabase = data?.lastDate;
+    return { contacts, lastDateDatabase };
   }
 }
