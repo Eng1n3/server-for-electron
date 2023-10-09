@@ -6,9 +6,11 @@ import {
   HttpStatus,
   ParseArrayPipe,
   Post,
+  Query,
 } from '@nestjs/common';
-import { ContactDto } from './dto/contact.dto';
+import { ContactDto } from './dto/uploads-contact.dto';
 import { ContactService } from './contact.service';
+import { ParseDatePipe } from './pipes/parse-date.pipe';
 
 @Controller('synchronize')
 export class ContactController {
@@ -16,7 +18,7 @@ export class ContactController {
 
   @Get('fetch')
   @HttpCode(HttpStatus.OK)
-  async fetch() {
+  async fetch(@Query('lastDate', ParseDatePipe) lastDate: Date) {
     const result = await this.contactService.fetchAll();
     return {
       statusCode: HttpStatus.OK,

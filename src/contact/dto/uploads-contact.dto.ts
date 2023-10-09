@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsArray, IsDate, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ContactImageDto {
   @IsString()
