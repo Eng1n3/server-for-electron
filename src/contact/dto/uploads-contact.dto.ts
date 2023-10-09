@@ -1,4 +1,12 @@
-import { IsArray, IsDate, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 
 export class ContactImageDto {
   @IsString()
@@ -18,9 +26,11 @@ export class ContactImageDto {
   createdAt?: Date;
 
   @IsString()
+  @IsOptional()
   updatedAt?: Date;
 
   @IsString()
+  @IsOptional()
   deletedAt?: Date;
 }
 
@@ -35,10 +45,12 @@ export class ContactDto {
   @IsString()
   name: string;
 
-  @IsString()
+  @IsNumber()
   phoneNumber: number;
 
-  @IsString()
+  @IsObject()
+  @Type(() => ContactImageDto)
+  @ValidateNested()
   image: ContactImageDto;
 
   @IsString()
@@ -48,8 +60,10 @@ export class ContactDto {
   createdAt: Date;
 
   @IsString()
+  @IsOptional()
   updatedAt: Date;
 
   @IsString()
+  @IsOptional()
   deletedAt: Date;
 }
