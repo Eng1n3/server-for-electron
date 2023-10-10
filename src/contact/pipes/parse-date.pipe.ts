@@ -9,7 +9,7 @@ import {
 export class ParseDatePipe implements PipeTransform<string, Date> {
   transform(value: string, metadata: ArgumentMetadata): Date {
     const val = new Date(parseInt(value)).getTime() > 0;
-    if (!val) {
+    if (value && !val) {
       throw new BadRequestException('last date synchronize is required');
     }
     return new Date(parseInt(value));

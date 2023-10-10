@@ -25,16 +25,16 @@ export class ContactService {
     await this.contactRepo.save(newContacts);
   }
 
-  async fetchAll(lastDate: Date) {
+  async fetchAll(lastDate?: Date) {
     const contacts = await this.contactRepo.find({
       withDeleted: true,
       where: [
         {
-          createdAt: MoreThan(lastDate),
+          createdAt: lastDate ? MoreThan(lastDate) : undefined,
         },
-        { updatedAt: MoreThan(lastDate) },
+        { updatedAt: lastDate ? MoreThan(lastDate) : undefined },
         {
-          deletedAt: MoreThan(lastDate),
+          deletedAt: lastDate ? MoreThan(lastDate) : undefined,
         },
       ],
       relations: { image: true },

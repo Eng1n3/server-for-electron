@@ -7,14 +7,30 @@ import {
   ParseArrayPipe,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
 import { ContactDto } from './dto/uploads-contact.dto';
 import { ContactService } from './contact.service';
 import { ParseDatePipe } from './pipes/parse-date.pipe';
+import { Response } from 'express';
 
 @Controller('synchronize')
 export class ContactController {
   constructor(private contactService: ContactService) {}
+
+  @Get('download')
+  @HttpCode(HttpStatus.OK)
+  async download(
+    @Res({ passthrough: true }) res: Response,
+    @Query('lastDate', ParseDatePipe) lastDate?: Date,
+  ) {
+    const result = await this.contactService.fetchAll(lastDate);
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': 'attachment; filename="contact.json"',
+    });
+    return result;
+  }
 
   @Get('fetch')
   @HttpCode(HttpStatus.OK)
